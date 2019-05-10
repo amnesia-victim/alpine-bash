@@ -1,5 +1,4 @@
 FROM alpine:latest
-MAINTAINER support@ngineered.co.uk
 
 ARG CLOUD_SDK_VERSION=245.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
@@ -23,6 +22,7 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
     bash \
     vim \ 
     curl \
+    gcc \
     netcat-openbsd \
     perl-net-telnet \
     grep \
@@ -66,7 +66,7 @@ RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
     cp /etc/skel/.bashrc /root/.bashrc
 
 # Link vi to vim (otherwise ric no happy)
-RUN ln -sf vim /usr/bin/vi
+RUN ln -sf vim /usr/bin/vi ; ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Installing Terraform
 WORKDIR $GOPATH/src/github.com/hashicorp/terraform
@@ -74,7 +74,11 @@ RUN git clone https://github.com/hashicorp/terraform.git ./ && \
     git checkout v${TERRAFORM_VERSION} && \
     /bin/bash scripts/build.sh
 
+# Installing Ansible
+RUN apk add ansible
 
+# Customizing Ansible
+RUN mkdir /etc/ansible ; echo 'localhost' > /etc/ansible/hosts
 
 # Setup user a regular user
 RUN /usr/sbin/adduser -D -G wheel -k /etc/skel -s /bin/bash user && \
