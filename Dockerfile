@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG CLOUD_SDK_VERSION=245.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
-ENV TERRAFORM_VERSION=0.10.0
+ENV TERRAFORM_VERSION=0.11.8
 ENV TF_DEV=true
 ENV TF_RELEASE=true
 
@@ -69,13 +69,14 @@ RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
 RUN ln -sf vim /usr/bin/vi ; ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Installing Terraform
-WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-RUN git clone https://github.com/hashicorp/terraform.git ./ && \
-    git checkout v${TERRAFORM_VERSION} && \
-    /bin/bash scripts/build.sh
+RUN cd /usr/local/bin && \
+    curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    terraform -v
 
 # Installing Ansible
-RUN apk add ansible
+RUN apk add ansible ; ansible --version
 
 # Customizing Ansible
 RUN mkdir /etc/ansible ; echo 'localhost' > /etc/ansible/hosts
