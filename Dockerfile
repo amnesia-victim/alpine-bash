@@ -3,6 +3,9 @@ MAINTAINER support@ngineered.co.uk
 
 ARG CLOUD_SDK_VERSION=245.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
+ENV TERRAFORM_VERSION=0.10.0
+ENV TF_DEV=true
+ENV TF_RELEASE=true
 
 ADD settings/bashrc /etc/bash.bashrc
 ADD settings/bashrc /etc/skel/.bashrc
@@ -52,7 +55,6 @@ RUN apk --no-cache add \
     gcloud config set metrics/environment github_docker_image && \
     gcloud --version
 
-
 VOLUME ["/root/.config"]
 
 # Adding the package path to local
@@ -65,6 +67,14 @@ RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
 
 # Link vi to vim (otherwise ric no happy)
 RUN ln -sf vim /usr/bin/vi
+
+# Installing Terraform
+WORKDIR $GOPATH/src/github.com/hashicorp/terraform
+RUN git clone https://github.com/hashicorp/terraform.git ./ && \
+    git checkout v${TERRAFORM_VERSION} && \
+    /bin/bash scripts/build.sh
+
+
 
 # Setup user a regular user
 RUN /usr/sbin/adduser -D -G wheel -k /etc/skel -s /bin/bash user && \
