@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG CLOUD_SDK_VERSION=245.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
-ENV TERRAFORM_VERSION=0.11.8
+ENV TERRAFORM_VERSION=0.11.14
 ENV TF_DEV=true
 ENV TF_RELEASE=true
 
@@ -44,8 +44,9 @@ RUN apk --no-cache add \
     libc6-compat \
     openssh-client \
     git \
-    gnupg \
-    && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
+    gnupg 
+
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     ln -s /lib /lib64 && \
@@ -64,24 +65,25 @@ ADD settings/motd /etc/motd
 RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
     cp /etc/skel/.bashrc /root/.bashrc
 
-# Link vi to vim (otherwise ric no happy)
+# Link vi to vim 
 RUN ln -sf vim /usr/bin/vi ; ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Link python to python3
-RUN cd /usr/local/bin && ln -sf pydoc3 pydoc && ln -sf python3 python && ln -sf python3-config python-config
+RUN cd /usr/bin && ln -sf pydoc3 pydoc && ln -sf python3 python && ln -sf python3-config python-config
 
 # Installing Terraform
-RUN cd /usr/local/bin && \
-    curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
-    terraform -v
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
+    terraform --version
 
 # Installing Ansible
 RUN apk add ansible ; ansible --version
 
 # Customizing Ansible
 RUN mkdir /etc/ansible ; echo 'localhost' > /etc/ansible/hosts
+
+# Link python to python3
+RUN cd /usr/local/bin && ln -sf pydoc3 pydoc && ln -sf python3 python && ln -sf python3-config python-config
 
 # Setup user a regular user
 RUN /usr/sbin/adduser -D -G wheel -k /etc/skel -s /bin/bash user && \
@@ -91,5 +93,4 @@ RUN /usr/sbin/adduser -D -G wheel -k /etc/skel -s /bin/bash user && \
 WORKDIR /root
 
 CMD ["/bin/bash"]
-
 
