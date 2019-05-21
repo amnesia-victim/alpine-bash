@@ -30,7 +30,6 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
     nmap \
     drill \
     python3 \
-    openvpn \
     sudo && \
     pip3 install awscli && \
     pip3 install boto3 && \
