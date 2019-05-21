@@ -30,21 +30,19 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
     nmap \
     drill \
     python3 \
+    gnupg \ 
+    libc6-compat \
     sudo && \
     pip3 install awscli && \
     pip3 install boto3 && \
     ln -s /usr/bin/drill /usr/bin/dig
 
 ENV PATH /google-cloud-sdk/bin:$PATH
+
 RUN apk --no-cache add \
-    curl \
     python \
     py-crcmod \
-    bash \
-    libc6-compat \
-    openssh-client \
-    git \
-    gnupg 
+    libc6-compat 
 
 RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
@@ -61,6 +59,7 @@ VOLUME ["/root/.config"]
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 ADD settings/motd /etc/motd
+
 # Set Root to bash not ash and overwrite .bashrc
 RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
     cp /etc/skel/.bashrc /root/.bashrc
