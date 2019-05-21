@@ -65,10 +65,10 @@ RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
     cp /etc/skel/.bashrc /root/.bashrc
 
 # Link vi to vim 
-RUN ln -sf vim /usr/bin/vi ; ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -sf vim /usr/bin/vi ;
 
 # Link python to python3
-RUN cd /usr/bin && ln -sf pydoc3 pydoc && ln -sf python3 python && ln -sf python3-config python-config
+RUN cd /usr/bin && ln -s pip3 pip && ln -sf pydoc3 pydoc && ln -sf python3 python && ln -sf python3-config python-config
 
 # Installing Terraform
 RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
