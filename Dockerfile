@@ -33,6 +33,9 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
     drill \
     python3 \
     openvpn \
+    python  \
+    py-crcmod \
+    libc6-compat \ 
     sudo && \
     pip3 install awscli && \
     pip3 install boto3 && \
@@ -40,9 +43,6 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
 
 ENV PATH /google-cloud-sdk/bin:$PATH
 RUN apk --no-cache add \
-    python \
-    py-crcmod \
-    libc6-compat \
     && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
