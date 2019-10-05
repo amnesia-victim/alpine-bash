@@ -1,8 +1,8 @@
 FROM alpine:latest
 
-ARG CLOUD_SDK_VERSION=245.0.0
+ARG CLOUD_SDK_VERSION=265.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
-ARG TERRAFORM_VERSION=0.11.12
+ARG TERRAFORM_VERSION=0.12.9
 ENV TERRAFORM_VERSION=$TERRAFORM_VERSION
 ENV TF_DEV=true
 ENV TF_RELEASE=true
@@ -37,6 +37,7 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && 
     py-crcmod \
     libc6-compat \ 
     sudo && \
+    pip3 install --upgrade pip && \
     pip3 install awscli && \
     pip3 install boto3 && \
     ln -s /usr/bin/drill /usr/bin/dig
@@ -63,7 +64,7 @@ RUN sed -i 's/root:\/bin\/ash/root:\/bin\/bash/' /etc/passwd && \
     cp /etc/skel/.bashrc /root/.bashrc
 
 # Link vi to vim (otherwise ric no happy)
-RUN ln -sf vim /usr/bin/vi ; ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -sf vim /usr/bin/vi
 
 # Installing Terraform
 RUN wget -q -O /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
